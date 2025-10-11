@@ -7,7 +7,7 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide-react.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -271,11 +271,11 @@
                 return (
                     <div className="min-h-screen bg-black text-gray-200 p-6 font-mono relative">
                         <div 
-                            className="absolute inset-0 opacity-60 bg-repeat"
+                            className="absolute inset-0 opacity-40 bg-repeat"
                             style={{
                                 backgroundImage: `url(${TEXTURE_URL})`,
-                                backgroundSize: '300px',
-                                mixBlendMode: 'multiply'
+                                backgroundSize: '400px',
+                                mixBlendMode: 'overlay'
                             }}
                         />
                         <div className="max-w-2xl mx-auto relative z-10">
