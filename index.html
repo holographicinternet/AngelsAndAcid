@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angels & Acid</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // UPDATE THESE PATHS to match your GitHub repository structure
+        // If images are in same folder as HTML: './imagename.png'
+        // If in an 'images' folder: './images/imagename.png'
+        const LOGO_URL = './logo.png';
+        const CHARACTERS_URL = './characters.png';
+        const TEXTURE_URL = './texture.jpg';
+
+        const AngelsAndAcid = () => {
+            const [gameState, setGameState] = useState('character-select');
+            const [character, setCharacter] = useState(null);
+            const [currentAct, setCurrentAct] = useState(1);
+            const [screenType, setScreenType] = useState('story');
+            const [selectedChoice, setSelectedChoice] = useState(null);
+            const [selectedItem, setSelectedItem] = useState(null);
+            const [diceRolling, setDiceRolling] = useState(false);
+            const [diceResult, setDiceResult] = useState(null);
+            const [stats, setStats] = useState({
+                cool: 5,
+                flow: 5,
+                awareness: 5,
+                grit: 5,
+                juice: 5
+            });
+            const [conditions, setConditions] = useState([]);
+            const [actResults, setActResults] = useState([]);
+            const [generatedActs, setGeneratedActs] = useState({});
+
+            const characters = {
+                prophet: {
+                    name: 'The Prophet of Asphalt',
+                    description: 'Street mystic who reads sermons in the breath of lovers and the dying gasps of civilization.',
+                    biases: { awareness: 2, grit: 1 },
+                    thumbnailPosition: '0% 0%'
+                },
+                velvet: {
+                    name: 'The Velvet Anarchist',
+                    description: 'Erotic insurgent. Every kiss is a Molotov cocktail, every touch dismantles the system.',
+                    biases: { cool: 2, juice: 1 },
+                    thumbnailPosition: '50% 0%'
+                },
+                ghostwriter: {
+                    name: 'The Ghostwriter',
+                    description: 'You rewrite reality in stolen ink and the blood of abandoned dreams. Invisible revolutionary.',
+                    biases: { flow: 2, awareness: 1 },
+                    thumbnailPosition: '100% 0%'
+                }
+            };
+
+            const actData = {
+                1: {
+                    title: 'The Bus to Oblivion',
+                    story: 'The Greyhound reeks of sweat and apocalypse. Outside, America dissolves into strip malls and ghost towns. A girl sleeps against the window, her lips parted like a wound. You want to wake her, taste the exhaustion on her mouth. Your notebook trembles, virgin white pages waiting to be violated by truth. The driver\'s eyes in the mirror say: we\'re all fugitives now.',
+                    choices: [
+                        { text: 'Lean close and whisper questions into her sleeping ear', stat: 'awareness' },
+                        { text: 'Write obscenities that become prophecy on your ticket', stat: 'flow' },
+                        { text: 'Touch her face and make her remember you forever', stat: 'cool' },
+                        { text: 'Stare into the wasteland until it stares back', stat: 'grit' }
+                    ],
+                    items: [
+                        { name: 'Poison Pen', modifier: 2, description: 'Words that cut authority\'s throat' },
+                        { name: 'Black Coffee of Insurrection', modifier: 1, description: 'Clarity that burns like gasoline' },
+                        { name: 'Fedora of Concealment', modifier: 1, description: 'Hide from the surveillance state' }
+                    ],
+                    results: {
+                        low: 'The words abort before birth. You swallow the failure like broken glass.',
+                        mid: 'Something shifts in the air. The bus hums a frequency only revolutionaries hear.',
+                        high: 'You write the first line that could burn down the world. The highway bends to your will.'
+                    }
+                },
+                2: {
+                    title: 'The Underground',
+                    story: 'Rain baptizes the street in oil and sin. Behind the basement door, bodies move like a single organism of rebellion. Saxophones scream rage at God. A woman with knife-edge eyes slides next to you, whispers: "The pigs are watching. The poets are dangerous now." Her hand on your thigh is a declaration of war. The mic waits, glowing like a fuse.',
+                    choices: [
+                        { text: 'Claim the stage and make them feel every forbidden thing', stat: 'juice' },
+                        { text: 'Let the room\'s pulse guide your hands to where they shouldn\'t be', stat: 'awareness' },
+                        { text: 'Tell her exactly what you want to do when the lights go out', stat: 'cool' },
+                        { text: 'Slip into shadow and plot the revolution from darkness', stat: 'flow' }
+                    ],
+                    items: [
+                        { name: 'Manifesto of Flesh', modifier: 2, description: 'Words that make bodies ache for freedom' },
+                        { name: 'Drums of Insurrection', modifier: 1, description: 'Rhythm that incites riot' },
+                        { name: 'Cigarette of Infinite Rebellion', modifier: 1, description: 'Never submits, never burns out' }
+                    ],
+                    results: {
+                        low: 'Your voice cracks. The room smells your fear like blood in water.',
+                        mid: 'They listen. Some hunger. Some hate. All feel something primal stir.',
+                        high: 'You become the sermon. Bodies press closer. Sweat and revelation mix. This is church for the damned.'
+                    },
+                    condition: 'Revolutionary Fever'
+                },
+                3: {
+                    title: 'Motel Salvation',
+                    story: 'The city ends where desire begins. Motels pulse pink against the void, vacancy signs blinking like coded invitations. You find them by the empty pool, a silhouette that makes your blood remember what freedom tastes like. They smile like they know exactly what you need to destroy. The neon reads SALVATION but you both know it means something else entirely.',
+                    choices: [
+                        { text: 'Ask what they\'re running from, then kiss them before they answer', stat: 'awareness' },
+                        { text: 'Push them against the wall and let actions speak', stat: 'juice' },
+                        { text: 'Walk past like you own the night and everything in it', stat: 'grit' },
+                        { text: 'Share a cigarette and let the silence get dangerous', stat: 'cool' }
+                    ],
+                    items: [
+                        { name: 'Typewriter of Binding', modifier: 2, description: 'Each word typed rewrites the laws of physics' },
+                        { name: 'Endless Cigarette', modifier: 1, description: 'Communion through smoke and defiance' },
+                        { name: 'Saxophone of Raw Truth', modifier: 1, description: 'Exposes every hidden hunger' }
+                    ],
+                    results: {
+                        low: 'They laugh. You hear every insecurity echo back through the neon wasteland.',
+                        mid: 'Something passes between you. Names exchanged like contraband. A room key weighs heavy with possibility.',
+                        high: 'You dissolve into each other. Time stops. God watches and learns what devotion really means.'
+                    },
+                    condition: 'Baptized in Neon'
+                },
+                4: {
+                    title: 'Dawn in the Ruins',
+                    story: 'You walk until the music dies and only truth remains. The desert doesn\'t care about your revolution or your lovers or your manifesto. Dawn comes like an interrogation. Your notebook is full of confessions that could get you killed. A siren wails—cop or angel, it doesn\'t matter anymore. The light demands you choose: burn it all or become it.',
+                    choices: [
+                        { text: 'Write the final prophecy in blood and dust', stat: 'flow' },
+                        { text: 'Burn every word and let the ashes build something new', stat: 'grit' },
+                        { text: 'Call the one person who might remember you', stat: 'cool' },
+                        { text: 'Keep walking until you become pure incandescent truth', stat: 'juice' }
+                    ],
+                    items: [
+                        { name: 'Last Cigarette Before Heaven', modifier: 2, description: 'Summons your highest self through smoke' },
+                        { name: 'Black Coffee of Clarity', modifier: 1, description: 'See everything before the end' },
+                        { name: 'Fedora of Invisibility', modifier: 1, description: 'Slip past authority one last time' }
+                    ],
+                    results: {
+                        low: 'You whisper rebellion to dust. It forgets you. Maybe that\'s mercy.',
+                        mid: 'Wind scatters your words like seeds. Someone, somewhere, will read them and burn.',
+                        high: 'You become the prophecy. The desert crowns you. Angels kneel. You are the new testament written in flesh and fire.'
+                    }
+                }
+            };
+
+            useEffect(() => {
+                if (gameState === 'playing' && !generatedActs[currentAct]) {
+                    setGeneratedActs(prev => ({ ...prev, [currentAct]: actData[currentAct] }));
+                }
+            }, [currentAct, gameState]);
+
+            const selectCharacter = (charKey) => {
+                const char = characters[charKey];
+                setCharacter(charKey);
+                const newStats = { ...stats };
+                Object.keys(char.biases).forEach(stat => {
+                    newStats[stat] += char.biases[stat];
+                });
+                setStats(newStats);
+                setGameState('playing');
+                setScreenType('story');
+            };
+
+            const selectChoice = (choice) => {
+                setSelectedChoice(choice);
+                setScreenType('item');
+            };
+
+            const selectItemAndRoll = (item) => {
+                setSelectedItem(item);
+                setScreenType('roll');
+                setDiceRolling(true);
+
+                setTimeout(() => {
+                    const die1 = Math.floor(Math.random() * 6) + 1;
+                    const die2 = Math.floor(Math.random() * 6) + 1;
+                    const baseRoll = die1 + die2;
+                    const statMod = Math.floor((stats[selectedChoice.stat] - 5) / 2);
+                    const itemMod = item.modifier;
+                    const total = baseRoll + statMod + itemMod;
+                    
+                    setDiceResult({ die1, die2, baseRoll, statMod, itemMod, total });
+                    setDiceRolling(false);
+                }, 2000);
+            };
+
+            const showResult = () => {
+                const currentActData = generatedActs[currentAct];
+                const newStats = { ...stats };
+                let resultText = '';
+                let statChange = 0;
+                
+                if (diceResult.total >= 10) {
+                    resultText = currentActData.results.high;
+                    newStats[selectedChoice.stat] += 1;
+                    statChange = 1;
+                } else if (diceResult.total >= 5) {
+                    resultText = currentActData.results.mid;
+                    statChange = 0;
+                } else {
+                    resultText = currentActData.results.low;
+                    newStats[selectedChoice.stat] -= 1;
+                    statChange = -1;
+                }
+
+                if (currentActData.condition && diceResult.total >= 8) {
+                    setConditions([...conditions, currentActData.condition]);
+                }
+
+                setStats(newStats);
+                setActResults([...actResults, { 
+                    act: currentAct, 
+                    result: diceResult.total >= 10 ? 'high' : diceResult.total >= 5 ? 'mid' : 'low', 
+                    resultText,
+                    stat: selectedChoice.stat,
+                    statChange 
+                }]);
+                setScreenType('result');
+            };
+
+            const nextAct = () => {
+                if (currentAct < 4) {
+                    setCurrentAct(currentAct + 1);
+                    setScreenType('story');
+                    setSelectedChoice(null);
+                    setSelectedItem(null);
+                    setDiceResult(null);
+                } else {
+                    setGameState('ending');
+                }
+            };
+
+            const getEndingPoem = () => {
+                const dominantStat = Object.keys(stats).reduce((a, b) => stats[a] > stats[b] ? a : b);
+                
+                const poems = {
+                    cool: 'You walked through hell with sex on your lips and rebellion in your veins.\\nEvery authority figure who tried to break you became aroused by their failure.\\nYour cigarette drew constellations that rewrote the laws of desire.\\nYou are cool incarnate—untouchable, unfuckable, absolutely devastating.\\n\\nYou became: The Lover Who Destroyed Civilization',
+                    flow: 'You surrendered to the rhythm of bodies and insurrection.\\nYour flesh became pure improvisation, liquid subversion.\\nTime bent around your movements like a desperate supplicant.\\nYou are flow embodied—the current that drowns authority, the pulse of revolution.\\n\\nYou became: The River That Erodes All Empires',
+                    awareness: 'You saw through every lie they sold as truth.\\nThe veil lifted and you stared into the raw wound of reality.\\nClarity cut you open but you wore the scars like medals.\\nYou are awareness manifest—the eye that refuses to close, the truth that burns.\\n\\nYou became: The Prophet Who Saw God Naked',
+                    grit: 'You bled for every word and kept bleeding.\\nThey tried to break you with badges and brutality but you just got harder.\\nEvery scar became scripture you carved into the system\\'s flesh.\\nYou are grit personified—the survivor who refuses to be saved, the martyr who won\\'t die.\\n\\nYou became: The Last Poet Standing in the Ashes',
+                    juice: 'You channeled raw creation through your body like voltage.\\nEvery word you spoke made reality shudder and submit.\\nYou fucked and fought and created until the world had no choice but to transform.\\nYou are juice incarnate—pure electric truth, the coming revolution made flesh.\\n\\nYou became: The Prophet-Priest of the New Apocalypse'
+                };
+
+                return poems[dominantStat];
+            };
+
+            const getFinalTitle = () => {
+                const dominantStat = Object.keys(stats).reduce((a, b) => stats[a] > stats[b] ? a : b);
+                const titles = {
+                    cool: 'The Lover Who Destroyed Civilization',
+                    flow: 'The River That Erodes All Empires',
+                    awareness: 'The Prophet Who Saw God Naked',
+                    grit: 'The Last Poet Standing in the Ashes',
+                    juice: 'The Prophet-Priest of the New Apocalypse'
+                };
+                return titles[dominantStat];
+            };
+
+            if (gameState === 'character-select') {
+                return (
+                    <div className="min-h-screen bg-black text-gray-200 p-6 font-mono relative">
+                        <div 
+                            className="absolute inset-0 opacity-20 bg-repeat"
+                            style={{
+                                backgroundImage: `url(${TEXTURE_URL})`,
+                                backgroundSize: '400px',
+                                mixBlendMode: 'overlay'
+                            }}
+                        />
+                        <div className="max-w-2xl mx-auto relative z-10">
+                            <div className="border-2 border-gray-700 p-8 mb-8 bg-gray-950 bg-opacity-90">
+                                <img 
+                                    src={LOGO_URL} 
+                                    alt="Angels & Acid" 
+                                    className="w-full max-w-md mx-auto mb-4"
+                                />
+                            </div>
+
+                            <div className="border border-gray-800 p-6 mb-6 bg-gray-950 bg-opacity-90">
+                                <p className="text-sm text-gray-400 uppercase tracking-wide text-center">Choose your character to begin the descent</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                {Object.entries(characters).map(([key, char]) => (
+                                    <button
+                                        key={key}
+                                        onClick={() => selectCharacter(key)}
+                                        className="w-full text-left border border-gray-700 p-6 hover:bg-gray-900 hover:border-gray-500 transition-all bg-gray-950 bg-opacity-90 flex items-start gap-4"
+                                    >
+                                        <div 
+                                            className="w-16 h-16 flex-shrink-0 bg-cover bg-center border border-gray-600"
+                                            style={{
+                                                backgroundImage: `url(${CHARACTERS_URL})`,
+                                                backgroundPosition: char.thumbnailPosition,
+                                                backgroundSize: '300%'
+                                            }}
+                                        />
+                                        <div className="flex-1">
+                                            <h3 className="text-lg mb-2 font-serif">{char.name}</h3>
+                                            <p className="text-sm text-gray-400 leading-relaxed">{char.description}</p>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (gameState === 'ending') {
+                return (
+                    <div className="min-h-screen bg-black text-gray-200 p-6 font-mono relative">
+                        <div 
+                            className="absolute inset-0 opacity-20 bg-repeat"
+                            style={{
+                                backgroundImage: `url(${TEXTURE_URL})`,
+                                backgroundSize: '400px',
+                                mixBlendMode: 'overlay'
+                            }}
+                        />
+                        <div className="max-w-2xl mx-auto relative z-10">
+                            <div className="border-2 border-gray-700 p-8 bg-gray-950 bg-opacity-90">
+                                <h2 className="text-2xl mb-2 font-serif text-center">WHO YOU BECAME</h2>
+                                <p className="text-lg mb-6 text-gray-400 text-center italic">{getFinalTitle()}</p>
+                                <div className="text-sm leading-loose whitespace-pre-line text-gray-300 mb-8 border-l-2 border-gray-700 pl-4">
+                                    {getEndingPoem()}
+                                </div>
+                                <div className="border-t border-gray-800 pt-6">
+                                    <p className="text-xs text-gray-500 mb-2">FINAL RESONANCE</p>
+                                    <div className="grid grid-cols-5 gap-2 text-xs">
+                                        {Object.entries(stats).map(([stat, value]) => (
+                                            <div key={stat} className="text-center">
+                                                <div className="text-gray-500 uppercase mb-1">{stat}</div>
+                                                <div className="text-gray-300">{value}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setGameState('character-select');
+                                        setCharacter(null);
+                                        setCurrentAct(1);
+                                        setScreenType('story');
+                                        setSelectedChoice(null);
+                                        setSelectedItem(null);
+                                        setDiceRolling(false);
+                                        setDiceResult(null);
+                                        setStats({ cool: 5, flow: 5, awareness: 5, grit: 5, juice: 5 });
+                                        setConditions([]);
+                                        setActResults([]);
+                                        setGeneratedActs({});
+                                    }}
+                                    className="w-full border border-gray-600 px-6 py-3 mt-8 hover:bg-gray-800 transition-all text-sm"
+                                >
+                                    BURN ANOTHER PATH
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentActData = generatedActs[currentAct];
+            
+            if (!currentActData) return null;
+
+            return (
+                <div className="min-h-screen bg-black text-gray-200 p-6 font-mono relative">
+                    <div 
+                        className="absolute inset-0 opacity-20 bg-repeat"
+                        style={{
+                            backgroundImage: `url(${TEXTURE_URL})`,
+                            backgroundSize: '400px',
+                            mixBlendMode: 'overlay'
+                        }}
+                    />
+                    <div className="max-w-2xl mx-auto relative z-10">
+                        <div className="border border-gray-800 p-4 mb-6 bg-gray-950 bg-opacity-90 flex justify-between items-center text-xs">
+                            <div>ACT {currentAct} / 4</div>
+                            <div className="text-gray-500">{currentActData.title}</div>
+                        </div>
+
+                        {screenType === 'story' && (
+                            <div className="border-2 border-gray-700 p-8 bg-gray-950 bg-opacity-90">
+                                <h2 className="text-xl mb-6 font-serif uppercase tracking-wide">{currentActData.title}</h2>
+                                <p className="text-sm leading-relaxed mb-8 text-gray-300">
+                                    {currentActData.story}
+                                </p>
+                                <button
+                                    onClick={() => setScreenType('choice')}
+                                    className="border border-gray-600 px-6 py-2 hover:bg-gray-800 transition-all text-sm"
+                                >
+                                    SEE WHAT HAPPENS NEXT
+                                </button>
+                            </div>
+                        )}
+
+                        {screenType === 'choice' && (
+                            <div className="border-2 border-gray-700 p-8 bg-gray-950 bg-opacity-90">
+                                <h3 className="text-lg mb-6 font-serif">WHAT DO YOU DO?</h3>
+                                <div className="space-y-3">
+                                    {currentActData.choices.map((choice, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => selectChoice(choice)}
+                                            className="w-full text-left border border-gray-700 p-4 hover:bg-gray-900 hover:border-gray-500 transition-all text-sm"
+                                        >
+                                            {choice.text}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {screenType === 'item' && (
+                            <div className="border-2 border-gray-700 p-8 bg-gray-950 bg-opacity-90">
+                                <h3 className="text-lg mb-6 font-serif">CHOOSE YOUR APPROACH</h3>
+                                <div className="space-y-3">
+                                    {currentActData.items.map((item, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => selectItemAndRoll(item)}
+                                            className="w-full text-left border border-gray-700 p-4 hover:bg-gray-900 hover:border-gray-500 transition-all text-sm"
+                                        >
+                                            <div className="font-serif mb-2">{item.name}</div>
+                                            <p className="text-xs text-gray-500">{item.description}</p>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {screenType === 'roll' && (
+                            <div className="border-2 border-gray-700 p-8 bg-gray-950 bg-opacity-90">
+                                <h3 className="text-lg mb-8 font-serif text-center">HOW DOES IT GO?</h3>
+                                <div className="flex justify-center items-center gap-8 mb-8">
+                                    {diceRolling ? (
+                                        <>
+                                            <div className="w-16 h-16 border-2 border-gray-600 flex items-center justify-center text-2xl animate-pulse">?</div>
+                                            <div className="w-16 h-16 border-2 border-gray-600 flex items-center justify-center text-2xl animate-pulse">?</div>
+                                        </>
+                                    ) : diceResult && (
+                                        <>
+                                            <div className="w-16 h-16 border-2 border-gray-600 flex items-center justify-center text-2xl">{diceResult.die1}</div>
+                                            <div className="w-16 h-16 border-2 border-gray-600 flex items-center justify-center text-2xl">{diceResult.die2}</div>
+                                        </>
+                                    )}
+                                </div>
+                                {diceResult && !diceRolling && (
+                                    <div className="text-center mb-6">
+                                        <div className="text-xs text-gray-500 mb-2">
+                                            Base Roll: {diceResult.baseRoll} + Stat Modifier: {diceResult.statMod >= 0 ? '+' : ''}{diceResult.statMod} + Approach: +{diceResult.itemMod}
+                                        </div>
+                                        <div className="text-sm text-gray-400 font-bold">
+                                            TOTAL: {diceResult.total}
+                                        </div>
+                                    </div>
+                                )}
+                                {diceResult && !diceRolling && (
+                                    <button
+                                        onClick={showResult}
+                                        className="w-full border border-gray-600 px-6 py-2 hover:bg-gray-800 transition-all text-sm"
+                                    >
+                                        SEE WHAT HAPPENS
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
+                        {screenType === 'result' && (
+                            <div className="border-2 border-gray-700 p-8 bg-gray-950 bg-opacity-90">
+                                <h3 className="text-lg mb-6 font-serif">WHAT HAPPENS</h3>
+                                <p className="text-sm leading-relaxed mb-8 text-gray-300">
+                                    {actResults[actResults.length - 1].resultText}
+                                </p>
+                                <div className="border-t border-gray-800 pt-4 mb-6">
+                                    <p className="text-xs text-gray-500 mb-3">STATUS</p>
+                                    <div className="text-sm text-gray-400 mb-2">
+                                        <span className="uppercase text-gray-500">{actResults[actResults.length - 1].stat}</span>
+                                        {actResults[actResults.length - 1].statChange > 0 && (
+                                            <span className="text-green-500 ml-2">+1 ↑</span>
+                                        )}
+                                        {actResults[actResults.length - 1].statChange < 0 && (
+                                            <span className="text-red-500 ml-2">-1 ↓</span>
+                                        )}
+                                        {actResults[actResults.length - 1].statChange === 0 && (
+                                            <span className="text-gray-500 ml-2">—</span>
+                                        )}
+                                    </div>
+                                    {conditions.length > 0 && (
+                                        <div className="text-sm text-gray-400 mt-2">
+                                            Condition: <span className="italic">{conditions[conditions.length - 1]}</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={nextAct}
+                                    className="border border-gray-600 px-6 py-2 hover:bg-gray-800 transition-all text-sm"
+                                >
+                                    {currentAct < 4 ? 'CONTINUE THE DESCENT' : 'SEE WHO YOU BECAME'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<AngelsAndAcid />, document.getElementById('root'));
+    </script>
+</body>
+</html>
