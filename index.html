@@ -8,13 +8,6 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier New', monospace;
-        }
-    </style>
 </head>
 <body>
     <div id="root"></div>
@@ -22,7 +15,6 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Image file paths - these should match your uploaded image filenames
         const LOGO_URL = './logo.png';
         const CHARACTERS_URL = './characters.png';
         const TEXTURE_URL = './texture.jpg';
@@ -79,9 +71,9 @@
                         { text: 'Stare into the wasteland until it stares back', stat: 'grit' }
                     ],
                     items: [
-                        { name: 'Poison Pen', modifier: 2, icon: 'pen', description: 'Words that cut authority\'s throat' },
-                        { name: 'Black Coffee of Insurrection', modifier: 1, icon: 'coffee', description: 'Clarity that burns like gasoline' },
-                        { name: 'Fedora of Concealment', modifier: 1, icon: 'eye', description: 'Hide from the surveillance state' }
+                        { name: 'Poison Pen', modifier: 2, description: 'Words that cut authority throat' },
+                        { name: 'Black Coffee of Insurrection', modifier: 1, description: 'Clarity that burns like gasoline' },
+                        { name: 'Fedora of Concealment', modifier: 1, description: 'Hide from the surveillance state' }
                     ],
                     results: {
                         low: 'The words abort before birth. You swallow the failure like broken glass.',
@@ -94,14 +86,14 @@
                     story: 'Rain baptizes the street in oil and sin. Behind the basement door, bodies move like a single organism of rebellion. Saxophones scream rage at God. A woman with knife-edge eyes slides next to you, whispers: "The pigs are watching. The poets are dangerous now." Her hand on your thigh is a declaration of war. The mic waits, glowing like a fuse.',
                     choices: [
                         { text: 'Claim the stage and make them feel every forbidden thing', stat: 'juice' },
-                        { text: 'Let the room\'s pulse guide your hands to where they shouldn\'t be', stat: 'awareness' },
+                        { text: 'Let the room pulse guide your hands to where they should not be', stat: 'awareness' },
                         { text: 'Tell her exactly what you want to do when the lights go out', stat: 'cool' },
                         { text: 'Slip into shadow and plot the revolution from darkness', stat: 'flow' }
                     ],
                     items: [
-                        { name: 'Manifesto of Flesh', modifier: 2, icon: 'book', description: 'Words that make bodies ache for freedom' },
-                        { name: 'Drums of Insurrection', modifier: 1, icon: 'music', description: 'Rhythm that incites riot' },
-                        { name: 'Cigarette of Infinite Rebellion', modifier: 1, icon: 'cigarette', description: 'Never submits, never burns out' }
+                        { name: 'Manifesto of Flesh', modifier: 2, description: 'Words that make bodies ache for freedom' },
+                        { name: 'Drums of Insurrection', modifier: 1, description: 'Rhythm that incites riot' },
+                        { name: 'Cigarette of Infinite Rebellion', modifier: 1, description: 'Never submits, never burns out' }
                     ],
                     results: {
                         low: 'Your voice cracks. The room smells your fear like blood in water.',
@@ -114,15 +106,15 @@
                     title: 'Motel Salvation',
                     story: 'The city ends where desire begins. Motels pulse pink against the void, vacancy signs blinking like coded invitations. You find them by the empty pool, a silhouette that makes your blood remember what freedom tastes like. They smile like they know exactly what you need to destroy. The neon reads SALVATION but you both know it means something else entirely.',
                     choices: [
-                        { text: 'Ask what they\'re running from, then kiss them before they answer', stat: 'awareness' },
+                        { text: 'Ask what they are running from, then kiss them before they answer', stat: 'awareness' },
                         { text: 'Push them against the wall and let actions speak', stat: 'juice' },
                         { text: 'Walk past like you own the night and everything in it', stat: 'grit' },
                         { text: 'Share a cigarette and let the silence get dangerous', stat: 'cool' }
                     ],
                     items: [
-                        { name: 'Typewriter of Binding', modifier: 2, icon: 'pen', description: 'Each word typed rewrites the laws of physics' },
-                        { name: 'Endless Cigarette', modifier: 1, icon: 'cigarette', description: 'Communion through smoke and defiance' },
-                        { name: 'Saxophone of Raw Truth', modifier: 1, icon: 'music', description: 'Exposes every hidden hunger' }
+                        { name: 'Typewriter of Binding', modifier: 2, description: 'Each word typed rewrites the laws of physics' },
+                        { name: 'Endless Cigarette', modifier: 1, description: 'Communion through smoke and defiance' },
+                        { name: 'Saxophone of Raw Truth', modifier: 1, description: 'Exposes every hidden hunger' }
                     ],
                     results: {
                         low: 'They laugh. You hear every insecurity echo back through the neon wasteland.',
@@ -141,12 +133,12 @@
                         { text: 'Keep walking until you become pure incandescent truth', stat: 'juice' }
                     ],
                     items: [
-                        { name: 'Last Cigarette Before Heaven', modifier: 2, icon: 'cigarette', description: 'Summons your highest self through smoke' },
-                        { name: 'Black Coffee of Clarity', modifier: 1, icon: 'coffee', description: 'See everything before the end' },
-                        { name: 'Fedora of Invisibility', modifier: 1, icon: 'eye', description: 'Slip past authority one last time' }
+                        { name: 'Last Cigarette Before Heaven', modifier: 2, description: 'Summons your highest self through smoke' },
+                        { name: 'Black Coffee of Clarity', modifier: 1, description: 'See everything before the end' },
+                        { name: 'Fedora of Invisibility', modifier: 1, description: 'Slip past authority one last time' }
                     ],
                     results: {
-                        low: 'You whisper rebellion to dust. It forgets you. Maybe that\'s mercy.',
+                        low: 'You whisper rebellion to dust. It forgets you. Maybe that is mercy.',
                         mid: 'Wind scatters your words like seeds. Someone, somewhere, will read them and burn.',
                         high: 'You become the prophecy. The desert crowns you. Angels kneel. You are the new testament written in flesh and fire.'
                     }
@@ -270,7 +262,7 @@
                 return (
                     <div className="min-h-screen bg-black text-gray-200 p-6 font-mono relative">
                         <div 
-                            className="absolute inset-0 opacity-40 bg-repeat"
+                            className="absolute inset-0 opacity-50 bg-repeat"
                             style={{
                                 backgroundImage: `url(${TEXTURE_URL})`,
                                 backgroundSize: '400px',
@@ -321,7 +313,7 @@
                 return (
                     <div className="min-h-screen bg-black text-gray-200 p-6 font-mono relative">
                         <div 
-                            className="absolute inset-0 opacity-20 bg-repeat"
+                            className="absolute inset-0 opacity-50 bg-repeat"
                             style={{
                                 backgroundImage: `url(${TEXTURE_URL})`,
                                 backgroundSize: '400px',
@@ -378,7 +370,7 @@
             return (
                 <div className="min-h-screen bg-black text-gray-200 p-6 font-mono relative">
                     <div 
-                        className="absolute inset-0 opacity-20 bg-repeat"
+                        className="absolute inset-0 opacity-50 bg-repeat"
                         style={{
                             backgroundImage: `url(${TEXTURE_URL})`,
                             backgroundSize: '400px',
@@ -433,11 +425,8 @@
                                             onClick={() => selectItemAndRoll(item)}
                                             className="w-full text-left border border-gray-700 p-4 hover:bg-gray-900 hover:border-gray-500 transition-all text-sm"
                                         >
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <IconComponent type={item.icon} />
-                                                <span className="font-serif">{item.name}</span>
-                                            </div>
-                                            <p className="text-xs text-gray-500 ml-8">{item.description}</p>
+                                            <div className="font-serif mb-2">{item.name}</div>
+                                            <p className="text-xs text-gray-500">{item.description}</p>
                                         </button>
                                     ))}
                                 </div>
