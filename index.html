@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Angels & Acid</title>
-    <meta property="og:title" content="Angels & Acid">
-<meta property="og:description" content="Roll the Dice & Howl.">
-<meta property="og:image" content="https://holographicinternet.github.io/AngelsAndAcid/logo.png">
-<meta property="og:url" content="https://holographicinternet.github.io/AngelsAndAcid/">
-<meta property="og:type" content="website">
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -276,11 +271,11 @@
                 return (
                     <div className="min-h-screen bg-black text-gray-200 p-6 font-mono relative">
                         <div 
-                            className="absolute inset-0 opacity-20 bg-repeat"
+                            className="absolute inset-0 opacity-60 bg-repeat"
                             style={{
                                 backgroundImage: `url(${TEXTURE_URL})`,
-                                backgroundSize: '400px',
-                                mixBlendMode: 'overlay'
+                                backgroundSize: '300px',
+                                mixBlendMode: 'multiply'
                             }}
                         />
                         <div className="max-w-2xl mx-auto relative z-10">
@@ -440,7 +435,7 @@
                                             className="w-full text-left border border-gray-700 p-4 hover:bg-gray-900 hover:border-gray-500 transition-all text-sm"
                                         >
                                             <div className="flex items-center gap-3 mb-2">
-                                                <span className="text-gray-500">{item.icon === 'pen' ? '✎' : item.icon === 'coffee' ? '☕' : item.icon === 'cigarette' ? '🚬' : item.icon === 'book' ? '📖' : item.icon === 'music' ? '♪' : item.icon === 'eye' ? '👁' : '•'}</span>
+                                                <IconComponent type={item.icon} />
                                                 <span className="font-serif">{item.name}</span>
                                             </div>
                                             <p className="text-xs text-gray-500 ml-8">{item.description}</p>
